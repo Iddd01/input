@@ -1,0 +1,26 @@
+ption Explicit
+
+Private Sub GetGoogleSheetsRangeValues()
+    Dim objWinHttpRequest As WinHttp.WinHttpRequest
+    Dim objDict As Scripting.Dictionary
+    Dim i As Integer, j As Integer
+    Set objWinHttpRequest = New WinHttp.WinHttpRequest
+    With objWinHttpRequest
+        .Open "GET", "https://sheets.googleapis.com/v4/spreadsheets/1C0pYTtba4H7rg8MKLMVdYt9k6F3kz1MNZX6dw3kUrXo/values/Sheet1!A1:E5?key=API_KEY"
+        .Send
+        If .Status = 200 Then
+            ' VBA-JSON: https://github.com/VBA-tools/VBA-JSON
+            Set objDict = JsonConverter.ParseJson(.ResponseText)
+            For i = 1 To objDict.Item("values").Count
+                For j = 1 To objDict.Item("values")(i).Count
+                    Debug.Print objDict.Item("values")(i)(j)
+                Next
+            Next
+        End If
+    End With
+    Set objWinHttpRequest = Nothing
+End Sub
+
+Private Function Quote(Text As String) As String
+    Quote = Chr(34) & Text & Chr(34)
+End Function
